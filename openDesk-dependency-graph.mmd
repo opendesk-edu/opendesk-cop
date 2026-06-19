@@ -1,74 +1,97 @@
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart TB
-    subgraph LEG[" "]
+
+    %% ==========================================
+    %% CLASSES (Color Coding)
+    %% ==========================================
+    classDef iam fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef app fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
+    classDef external fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray:5,5
+    classDef infra fill:#fff3e0,stroke:#e65100,stroke-width:1px
+    classDef deploy fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1px
+
+    %% ==========================================
+    %% LEGEND
+    %% ==========================================
+    subgraph LEGEND[" "]
         direction LR
-        L1[IAM / Portal]
-        L2[Applications]
-        L3[Infrastructure]
+        L1[IAM & Portal]:::iam
+        L2[Applications]:::app
+        L3[Infrastructure]:::infra
+        L4[External]:::external
+    end
+    style LEGEND fill:#0000,stroke:#0000
+
+    %% ==========================================
+    %% LAYER 1: EXTERNAL SYSTEMS
+    %% ==========================================
+    subgraph EXT["External"]
+        EXT_MTA[External MTAs<br/>Mail Relay / MX]:::external
+        EXT_CLIENT[Mail Clients<br/>Thunderbird etc.]:::external
+        EXT_SIP[SIP Trunk<br/>Phone]:::external
     end
 
-    style LEG fill:#0000,stroke:#0000
-
-    subgraph IAM["IAM & Portal (Nubus)"]
-        direction TB
-        KC[Keycloak<br/>OIDC Provider]
-        LDAP[OpenLDAP<br/>User Directory]
-        PORTAL[Portal<br/>Navigation]
-        PROV[Provisioning<br/>Service]
-        UMC[UMC Admin<br/>Console]
-        KCEXT[Keycloak<br/>Extensions<br/>Brute Force / MFA]
-    end
-
-    subgraph STORAGE["Data Storage Layer"]
-        PG[PostgreSQL<br/>Nextcloud / Nubus<br/>OpenProject / XWiki<br/>Element/Synapse]
-        MB[MariaDB<br/>OX AppSuite]
-        CASS[Cassandra<br/>OX Dovecot dict<br/>EE only]
-        S3[S3 / MinIO<br/>Nextcloud / OX<br/>OpenProject / Nubus<br/>Dovecot]
-        REDIS[Redis<br/>Nextcloud / OX<br/>Intercom]
-        MEMC[Memcached<br/>Nubus / OpenProject]
-        PVC[PersistentVolumes<br/>Mail / LDAP / Attachments<br/>Spool / Config]
-    end
-
-    subgraph INFRA["Infrastructure Services"]
-        CLAM[ClamAV<br/>Antivirus]
-        AMQ[NATS<br/>Provisioning Queue]
-        MIGPRE[Migrations Pre]
-        MIGPOST[Migrations Post]
-    end
-
+    %% ==========================================
+    %% LAYER 2: APPLICATIONS
+    %% ==========================================
     subgraph APPS["Applications"]
         direction TB
-        OX[OX App Suite<br/>Groupware]
-        DOVECOT[OX Dovecot<br/>Mail Backend]
-        PF[Postfix-Base<br/>Outbound MTA]
-        PFOX[Postfix-OX<br/>Mail Gateway]
-        NC[Nextcloud<br/>Files]
-        COLLAB[Collabora<br/>Weboffice]
-        CRYP[CryptPad<br/>Diagrams]
-        OP[OpenProject<br/>Project Mgmt]
-        XW[XWiki<br/>Knowledge Mgmt]
-        EL[Element / Synapse<br/>Chat & Call]
-        JIT[Jitsi<br/>Video Conferencing]
-        NOTES[Notes / Docs]
-        INTERCOM[Intercom<br/>Service]
-        OXC[OX Connector]
-        OPENPROJBOOT[openproject-<br/>bootstrap]
+
+        subgraph OX_SECTION["OX Ecosystem"]
+            OX[OX App Suite<br/>Groupware]:::app
+            DOVECOT[OX Dovecot<br/>Mail Backend]:::app
+            PF[Postfix-Base<br/>Outbound MTA]:::app
+            PFOX[Postfix-OX<br/>Mail Gateway]:::app
+            OXC[OX Connector]:::app
+        end
+
+        subgraph NC_SECTION["Nextcloud Ecosystem"]
+            NC[Nextcloud<br/>Files]:::app
+            COLLAB[Collabora<br/>Weboffice]:::app
+            CRYP[CryptPad<br/>Diagrams]:::app
+        end
+
+        OP[OpenProject<br/>Project Mgmt]:::app
+        XW[XWiki<br/>Knowledge Mgmt]:::app
+        EL[Element / Synapse<br/>Chat & Call]:::app
+        JIT[Jitsi<br/>Video Conferencing]:::app
+        NOTES[Notes / Docs]:::app
+        INTERCOM[Intercom Service]:::app
+        OPENPROJBOOT[openproject-bootstrap]:::app
     end
 
-    subgraph EXT["External"]
-        EXT_MTA[External MTAs<br/>Mail Relay / MX]
-        EXT_CLIENT[Mail Clients<br/>Thunderbird etc.]
-        EXT_SIP[SIP Trunk<br/>Phone]
+    %% ==========================================
+    %% LAYER 3: IAM & PORTAL
+    %% ==========================================
+    subgraph IAM["IAM & Portal"]
+        KC[Keycloak<br/>OIDC Provider]:::iam
+        LDAP[OpenLDAP<br/>User Directory]:::iam
+        PORTAL[Portal<br/>Navigation]:::iam
+        PROV[Provisioning Service]:::iam
+        UMC[UMC Admin Console]:::iam
+        KCEXT[Keycloak Extensions<br/>Brute Force / MFA]:::iam
     end
 
-    %% === IAM ===
+    %% ==========================================
+    %% LAYER 4: INFRASTRUCTURE
+    %% ==========================================
+    subgraph INFRA["Infrastructure Services"]
+        CLAM[ClamAV<br/>Antivirus]:::infra
+        AMQ[NATS<br/>Provisioning Queue]:::infra
+    end
+
+    %% ==========================================
+    %% ============ EDGES ============
+    %% ==========================================
+
+    %% --- IAM Internal ---
     KC --> LDAP
     PORTAL --> KC
     UMC --> LDAP
     KCEXT --> KC
     PROV --> LDAP
 
-    %% === OIDC Auth ===
+    %% --- OIDC Auth (all apps authenticate via Keycloak) ---
     NC -->|OIDC| KC
     OX -->|OIDC| KC
     OP -->|OIDC| KC
@@ -78,7 +101,7 @@ flowchart TB
     INTERCOM -->|OIDC| KC
     DOVECOT -->|OIDC| KC
 
-    %% === Direct LDAP ===
+    %% --- Direct LDAP ---
     NC -->|LDAP| LDAP
     OP -->|LDAP| LDAP
     XW -->|LDAP| LDAP
@@ -87,11 +110,12 @@ flowchart TB
     PORTAL -->|LDAP| LDAP
     PF -->|static SASL| LDAP
 
-    %% === Provisioning ===
+    %% --- Provisioning ---
     PROV --> OXC
     OXC -->|SOAP API| OX
+    PROV --> AMQ
 
-    %% === Intercom (Frontend Integration) ===
+    %% --- Intercom (Frontend Integration Hub) ---
     OX -->|Silent Login| INTERCOM
     EL -->|Silent Login| INTERCOM
     INTERCOM -->|Token Exchange| KC
@@ -100,8 +124,8 @@ flowchart TB
     INTERCOM -->|Newsfeed| XW
     PORTAL -->|Newsfeed| INTERCOM
 
-    %% === App-to-App Integration ===
-    OX -->|Video Conference| EL
+    %% --- App-to-App Integration ---
+    OX -->|Video Conf.| EL
     NC -->|Central Contacts| OX
     NC -->|Filepicker| OX
     OP -->|File Store| NC
@@ -110,7 +134,7 @@ flowchart TB
     OPENPROJBOOT --> NC
     OPENPROJBOOT --> OP
 
-    %% === Mail Flow ===
+    %% --- Mail Flow ---
     PF -->|outbound| EXT_MTA
     PFOX -->|inbound| EXT_MTA
     PFOX -->|auth| DOVECOT
@@ -125,68 +149,23 @@ flowchart TB
     EXT_CLIENT -->|LDAP| PFOX
     EXT_CLIENT --> DOVECOT
     CLAM --> PF
+
+    %% --- Telephony ---
     EXT_SIP --> JIT
 
-    %% === Storage ===
-    NC --> PG
-    NC --> S3
-    NC --> REDIS
-
-    NUBUS_DB["Nubus DBs"] --> PG
-    NUBUS_DB --> S3
-    NUBUS_DB --> MEMC
-    NUBUS_DB --> PVC
-
-    OP --> PG
-    OP --> S3
-    OP --> MEMC
-    OP --> PVC
-
-    XW --> PG
-    XW --> PVC
-
-    OX --> MB
-    OX --> S3
-    OX --> REDIS
-
-    DOVECOT --> CASS
-    DOVECOT --> S3
-    DOVECOT --> PVC
-
-    EL --> PG
-    EL --> PVC
-
-    PF --> PVC
-
-    INTERCOM --> REDIS
-    OXC --> PVC
-
-    PROV --> AMQ
-    AMQ --> PVC
-
-    CLAM --> PVC
-
-    %% === Deployment Order (helmfile) ===
-    MIGPRE -.-> INFRA_SERVICES
-    INFRA_SERVICES -.-> NUBUS
-    NUBUS -.-> OX_GROUP
-    OX_GROUP -.-> NC_GROUP
-    NC_GROUP -.-> COLLAB_CRYP
-    COLLAB_CRYP -.-> JIT_EL
-    JIT_EL -.-> OP_XW
-    OP_XW -.-> NOTES
-    NOTES -.-> BOOTSTRAP
-    BOOTSTRAP -.-> MIGPOST
-
-    subgraph DEPLOY_ORDER["Deployment Order"]
-        INFRA_SERVICES["1. Services<br/>PG / MariaDB / MinIO /<br/>Redis / Memcached / ClamAV"]
-        NUBUS["2. Nubus<br/>Keycloak / OpenLDAP / Portal<br/>Provisioning"]
-        OX_GROUP["3. OX + Mail<br/>AppSuite / Dovecot / Postfix"]
-        NC_GROUP["4. Nextcloud"]
-        COLLAB_CRYP["5. Collabora + CryptPad"]
-        JIT_EL["6. Jitsi + Element"]
-        OP_XW["7. OpenProject + XWiki"]
-        NOTES["8. Notes"]
-        BOOTSTRAP["9. OpenProject Bootstrap"]
-        MIGPOST["10. Post-Migrations"]
+    %% ==========================================
+    %% DEPLOYMENT ORDER (simplified linear chain)
+    %% ==========================================
+    subgraph DEPLOY["Deployment Order (helmfile)"]
+        direction LR
+        D1[1. Infra Services<br/>PG / MariaDB / MinIO /<br/>Redis / Memcached / ClamAV]:::deploy
+        D2[2. Nubus<br/>Keycloak / OpenLDAP /<br/>Portal / Provisioning]:::deploy
+        D3[3. OX + Mail<br/>AppSuite / Dovecot / Postfix]:::deploy
+        D4[4. Nextcloud]:::deploy
+        D5[5. Collabora + CryptPad]:::deploy
+        D6[6. Jitsi + Element]:::deploy
+        D7[7. OpenProject + XWiki]:::deploy
+        D8[8. Notes]:::deploy
+        D9[9. Bootstrap +<br/>Post-Migrations]:::deploy
+        D1 --> D2 --> D3 --> D4 --> D5 --> D6 --> D7 --> D8 --> D9
     end
