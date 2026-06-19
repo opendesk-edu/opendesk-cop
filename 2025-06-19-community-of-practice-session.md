@@ -45,7 +45,6 @@
 
 **Bisher eingerichtet**:
 - Keycloak Realm `opendesk` als zentraler IdP
-- SOGo (Client-ID `sogo`) und **Planka** (Client-ID `planka`) registriert
 - `email` + `preferred_username` Mapper aktiv
 - Verwaltung via `kcadm.sh` auf `ums-keycloak-0` (User: `kcadmin`)
 
