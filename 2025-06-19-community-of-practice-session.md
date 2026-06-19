@@ -2,7 +2,7 @@
 
 - **Datum**: Freitag, 19. Juni 2026 | **Zeit**: 14:00–15:30 CET
 - **Ort**: [BigBlueButton](https://webconf.hrz.uni-marburg.de/n/rooms/7gq-zdy-zje-roq/join)
-- **Repo**: [github.com/opendesk-edu/cop](https://github.com/opendesk-edu/cop) — [codeberg.org/opendesk-edu/cop](https://codeberg.org/opendesk-edu/cop)
+- **Repo**: [github.com/opendesk-edu/opendesk-cop](https://github.com/opendesk-edu/opendesk-cop) — [codeberg.org/opendesk-edu/opendesk-cop](https://codeberg.org/opendesk-edu/opendesk-cop)
 
 ---
 
@@ -175,7 +175,7 @@
 
 - Codeberg: [codeberg.org/opendesk-edu/opendesk-edu](https://codeberg.org/opendesk-edu/opendesk-edu/)
 - GitHub (Mirror): [github.com/opendesk-edu/opendesk-edu](https://github.com/opendesk-edu/opendesk-edu/)
-- **CoP-Material**: [github.com/opendesk-edu/cop](https://github.com/opendesk-edu/cop)
+- **CoP-Material**: [github.com/opendesk-edu/opendesk-cop](https://github.com/opendesk-edu/opendesk-cop)
 
 ---
 
@@ -461,7 +461,7 @@ flowchart TB
 - BBB-Raum: <https://webconf.hrz.uni-marburg.de/n/rooms/7gq-zdy-zje-roq/join>
 - openDesk Edu: <https://opendesk-edu.org/>
 - openDesk Edu Codeberg: <https://codeberg.org/opendesk-edu/opendesk-edu/>
-- CoP-Repo GitHub: <https://github.com/opendesk-edu/cop>
-- CoP-Repo Codeberg: <https://codeberg.org/opendesk-edu/cop>
+- CoP-Repo GitHub: <https://github.com/opendesk-edu/opendesk-cop>
+- CoP-Repo Codeberg: <https://codeberg.org/opendesk-edu/opendesk-cop>
 - Upstream Deployment: <https://gitlab.opencode.de/bmi/opendesk/deployment/opendesk>
 - Dependency Graph (SVG): `openDesk-dependency-graph.svg` (im Repo)
